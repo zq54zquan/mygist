@@ -128,8 +128,36 @@ var level:Int?
 var startLevel = 1
 var currentLevel = level ?? startLevel //？？表示如果左边可选值是nil,就使用右边的值作为返回，注意空格
 
+//6.optional chain
+class Toy {
+    let name:String
+    init(name:String) {
+        self.name = name
+    }
+}
 
+class Pet {
+    var toy:Toy?
+}
 
+class Child{
+    var pet:Pet?
+}
+
+extension Toy {
+    func play() {
+        print("hellp")
+    }
+}
+
+let playClousure = {(child:Child)->() in child.pet?.toy?.play()}
+var xiaoming = Child()
+var pet = Pet()
+var toy = Toy(name:"bong")
+
+xiaoming.pet = pet
+pet.toy = toy
+playClousure(xiaoming)
 
 
 
