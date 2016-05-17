@@ -159,6 +159,116 @@ xiaoming.pet = pet
 pet.toy = toy
 playClousure(xiaoming)
 
+//7.操作符
+
+//1.重载已定义的运算符
+struct Vector {
+    var x = 0.0
+    var y = 0.0
+}
+
+func +(left:Vector,right:Vector) -> Vector{
+    return Vector(x:left.x+right.x,y:left.y+right.y)
+}
+prefix func -(v:Vector) -> Vector{
+    return Vector(x:-v.x,y:-v.y);
+}
+
+let v1 = Vector(x:3,y:3)
+let minusv1 = -v1;
+
+let v2 = Vector(x:2,y:2)
+
+let v3  = v1+v2
+
+print("v3  \(v3.x):\(v3.y)")
+
+print("-v1  \(minusv1.x):\(minusv1.y)")
+
+//2.定义一个不存在的运算符，需要对新的运算符先进行声明
+infix operator +* { //infix 表示定义的是一个中位运算符，前后都是输入 prefix表示前缀运算发，postfix表示后缀运算符
+    associativity none //定义结合性, 表示同类的运算符对个出现时的运算顺序 left:左结合 right:右结合 none:表示不能同时出现同样的运算符?
+    precedence 160 //表示运算的优先级 越大越优先计算，默认的乘除法是150 加减法是140
+}
+
+func +*(left:Vector,right:Vector) -> Double {
+    return left.x*right.x + left.y*right.y
+}
 
 
+print("\(v1+*v2)")
+//8.func的修饰符
+func increamentor(variale:Int) ->Int {
+    //return ++variale; //方法参数默认是不可变的。默认参数其实都是用let初始化的
+    //方法声明等效于
+    //func increamentor1(let variale:Int) -> Int
+    return variale+1;
+}
 
+func increamentor1(var variable:Int) -> Int {
+    return ++variable;
+}
+
+var x = 9
+increamentor1(x)
+print("\(x)") //var作为方法参数只在方法内部起作用,调用完方法实参保持原样，相当于按值传递了参数
+
+func increamentor2(inout variable:Int) -> Int {//按引用传递，在方法内直接改变实参的值
+    return ++variable;
+}
+
+var y = 9
+increamentor2(&y); //调用时使用取引用符号
+print("\(y)")
+
+
+func makeIncreamentor(numtoadd:Int)->((inout variable:Int)->Int) {
+    func increamentor(inout va:Int) -> Int {
+        va+=numtoadd
+        return va;
+    }
+    return increamentor;
+}
+
+//9.字面值的转换
+extension Vector:BooleanLiteralConvertible {
+   init(booleanLiteral value: Bool) {
+        if(value) {
+            self = Vector(x:1,y:1)
+        }else {
+            self = Vector(x:0,y:0)
+        }
+    }
+}
+
+var origin:Vector = true
+
+print(origin)
+
+//10.下标
+
+extension Array {
+    subscript(input:[Int])->ArraySlice<Element> {
+        get {
+            var result = ArraySlice<Element>();
+            for i in input {
+                assert(i<self.count,"INDEX OUT OF RANGE")
+                result.append(self[i])
+            }
+            return result
+        }
+        
+        set {
+            for (index,i) in input.enumerate() {
+                assert(i < self.count, "INDEX OUT OF RANGE")
+                self[i] = newValue[index]
+            }
+        }
+    }
+}
+
+
+var arr1 = [1,2,3,4,5]
+arr1[[0,2,3]]
+arr1[[0,1,2]] = [8,9,10]
+arr1
