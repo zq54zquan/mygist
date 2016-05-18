@@ -272,3 +272,114 @@ var arr1 = [1,2,3,4,5]
 arr1[[0,2,3]]
 arr1[[0,1,2]] = [8,9,10]
 arr1
+//13.AnyObject Any
+//AnyObject 是一个protocol 所有的class都隐式的继承了他
+//swift中的所有基本类型都不是class而是struct，包括Array，Dictionary,string
+
+//这些都不能用AnyObject表示
+
+func someMethod() -> AnyObject? {
+    let result = String.init("hello")
+    return result
+}
+
+
+let anyObject:AnyObject? = someMethod()
+if let someInstance = anyObject as? String {
+    print("\(someInstance) is a string")
+}
+
+//Any的范围要比 AnyObject要大，除了class还可以表示struct和enum在内的所以类型
+let swiftInt:Int = 1
+let swiftString :String = "miao"
+let array:[AnyObject] = []
+//array.append(swiftInt)
+//array.append(swiftString) 类型不匹配，要想可以成功添加int和string需要把AnyObject改成Any
+
+
+//14.typealias
+typealias Location = CGPoint
+typealias Distance = Double
+
+func distanceBetweenPosition(location:Location,otherLocation:Location) -> Distance {
+    let disx = Distance(location.x - otherLocation.x)
+    let disy = Distance(location.x - otherLocation.y)
+    
+    return sqrt(pow(disx, Double(2))+pow(disy, Double(2)))
+}
+
+
+class Person<T> {
+    
+}
+
+//15.typealias Worker = Person;//不能为整个泛型定义typealias
+typealias Worker1 = Person<String>
+
+class MyGeneratot: GeneratorType {
+    typealias Element = Person<String>
+    var counter:[Element]
+    var index:Int
+    init(counter:[Element]) {
+        self.counter = counter
+        index = 1
+    }
+    func next() -> MyGeneratot.Element? {
+        return counter[index];
+    }
+    
+}
+//16. 可变参数函数
+//swift中可变参数的位置是随意的。
+//swift方法中可变参数的个数最多一个
+//可变参数必须是同一种类型的//可以将元素类型设置为Any来绕过这条、、
+func sum(input:Int ... ) -> Int {
+    return input.reduce(0, combine: +)
+}
+
+
+func myFunc(members:Int ..., string:String) {
+    members.forEach {
+        for i in 0..<$0 {
+            print("\(i+1) \(string)")
+        }
+    }
+}
+
+
+
+
+//17.Designated.Convenience和Required
+
+class ClassA {
+    let numA : Int
+    required init (num:Int )  { //required 表示这个初始化方法子类必须实现
+         numA = num
+    }
+    
+    required convenience init(bignum:Int) { //convinence 必须要调用同一个类里边的designate的init方法。不能被子类重写(override).但是可以直接重新定义也不能super调用
+        self.init(num:bignum>10000 ? 10000 : bignum)
+    }
+    
+    func printself() {
+        print("class a")
+    }
+}
+
+class  ClassB: ClassA {
+    let numB:Int
+    
+    required init (num:Int) { //隐式调用了super.init //只要子类重写（override）了父类的convenience init方法需要的init方法，子类就可以直接使用父类的convenience方法
+        numB = num
+        super.init(num: num)
+    }
+    
+    convenience required init(bignum:Int) {
+        self.init(num:bignum>3 ? 1000 : bignum)
+    }
+}
+
+var cb = ClassB.init(num: 3)
+var ccb = ClassB.init(bignum: 5)
+
+print("\(ccb.numA)")
