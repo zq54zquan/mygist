@@ -80,6 +80,7 @@ bool isValide(CHAR_ITEM i,CHAR_VALUE v) {
 void buildValidChars(CHAR_ITEM *ci,  int index,void(*callback)(CHAR_ITEM *)) {
     if(index == max_nums) {
         callback(ci);
+        return;
     }
     for(int i = 0 ;i < max_value; ++i) {
         if(isValide(ci[index],charValue[i])) {
