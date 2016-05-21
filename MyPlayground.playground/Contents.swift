@@ -357,6 +357,14 @@ class ClassA {
          numA = num
     }
     
+    init(smallValue:Int) {
+        if smallValue<1000 {
+            numA = 1000
+            return
+        }
+        
+        numA = smallValue;
+    }
     required convenience init(bignum:Int) { //convinence 必须要调用同一个类里边的designate的init方法。不能被子类重写(override).但是可以直接重新定义也不能super调用
         self.init(num:bignum>10000 ? 10000 : bignum)
     }
@@ -383,3 +391,46 @@ var cb = ClassB.init(num: 3)
 var ccb = ClassB.init(bignum: 5)
 
 print("\(ccb.numA)")
+
+//18.可以返回nil的init方法
+extension Int {
+    init?(formString:String) {
+        self = 0
+        var digit = formString.characters.count-1
+        for c in formString.characters {
+            var num = 0
+            if let n = Int(String(c)) {
+                num = n;
+            }else {
+                switch c {
+                case "一":
+                    num = 1;
+                case "二":
+                    num = 2;
+                case "三":
+                    num = 3;
+                case "四":
+                    num = 4;
+                case "五":
+                    num = 5;
+                case "六":
+                    num = 6;
+                case "七":
+                    num = 7;
+                case "八":
+                    num = 8;
+                case "九":
+                    num = 9;
+                case "零":
+                    num = 0;
+                default:
+                    return nil
+                }
+            }
+            self = self + num * Int(pow(10, Double(digit)))
+            digit -= 1;
+            
+        }
+    }
+    
+}
