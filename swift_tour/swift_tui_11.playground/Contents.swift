@@ -38,7 +38,7 @@ manager.data.append("some more data")//importer 属性一直没有创建
 print(manager.importer.fileName) //这个时候才会创建importer的实例 
 //lazy不能保证线程安全
 
-//计算属性
+//计算属性必须是变量
 //类，结构体，枚举可以定义计算属性
 struct Point {
     var x = 0.0, y = 0.0
@@ -97,5 +97,84 @@ stepCounter.totalSteps = 200
 stepCounter.totalSteps = 360
 
 //全局变量和局部变量
+
+var s:Int  {
+    get {
+        return 3
+    }
+    set {
+        print("new value\(newValue)")
+        
+    }
+}
+
+var d = 0 {
+willSet {
+   print("will set value\(newValue)")
+}
+}
+
+//类型属性
+//计算型类型属性只能是变量属性
+//存储型类型属性必须有默认值，因为类型属性不能在构造函数中确定
+//存储型类型属性是延迟初始化的，只有第一次被访问的时候才会初始化。线程安全，不需要lazy修饰
+struct SomeStruct {
+    static var storedTypeProperty = "Some value"
+    static var computedTypeProperty:Int {
+        return 1
+    }
+}
+
+enum SomeEnumeration {
+    static var storedTypeProperty = "Some value"
+    static var computedType:Int {
+        return 6
+    }
+}
+
+class SomeClass {
+    static var storedTypeProperty = "Some value"
+    static var computedTypeProperty:Int {
+        return 27
+    }
+    
+    class var overrideableComputedTypeProperty:Int { //可以让子类复写
+        return 107
+    }
+}
+
+print(SomeStruct.storedTypeProperty)
+SomeStruct.storedTypeProperty = "Another Value"
+print(SomeStruct.storedTypeProperty)
+
+
+print(SomeEnumeration.computedType)
+print(SomeClass.computedTypeProperty)
+
+class AudioChannel {
+    static let thresholdLevel = 10
+    static var maxInputLevelForAllChannel = 0
+    var currentLevel:Int = 0 {
+        didSet {
+            if currentLevel > AudioChannel.thresholdLevel {
+                currentLevel = AudioChannel.thresholdLevel
+            }
+            
+            if currentLevel > AudioChannel.maxInputLevelForAllChannel {
+                AudioChannel.maxInputLevelForAllChannel = currentLevel;
+            }
+        }
+        
+        
+    }
+}
+
+let leftChannel = AudioChannel()
+let rightChannel = AudioChannel()
+
+leftChannel.currentLevel = 7
+print(leftChannel.currentLevel)
+
+
 
 
