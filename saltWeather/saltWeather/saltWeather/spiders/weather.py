@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import re
 
 class Province:
     '省model'
@@ -55,27 +56,20 @@ class WeatherSpider(scrapy.Spider):
         citys = cl.xpath('./a//text()').extract()
         province = citys[0]
         city = citys[len(citys)-1]
-
-        wl = response.xpath('//div[@id="today"]')
-        wt = wl.xpath('./div[@class="t"]')
-        wsk = wt.xpath('./div[@class="sk"]')
-        wlimt = wsk.xpath('./div[@class="zs limit"]').xpath('./em/text()').extract()
-        wtime = wsk.xpath('./div[@class="time"]').xpath('./span/text()').extract()
-        wwet = wsk.xpath('./div[@class="zs h"]').xpath('./em/text()').extract()
-        wwinds = wsk.xpath('./div[@class="zs w"]').xpath('./em/text()').extract()
-        wwindd = wsk.xpath('./div[@class="zs w"]').xpath('./span/text()').extract()
-        wtem = wsk.xpath('./div[@class="tem"]').xpath('./span/text()').extract()
-        wair = wsk.xpath('./div[@class="zs pol"]').xpath('./span/.a/text()').extract()
-        wairurl = wsk.xpath('./div[@class="zs pol"]').xpath('./span/.a/@href').extract()
+        url=response.url
+        wl = response.xpath('//div[@id="7d"]')
+        summary = wl.xpath('./input/@value').extract()[0]
+        regex = ur"(\d+)/(\d+)"
+        match = re.search(regex,summary)
+        if match:
+            low = match.group(1)
+            high = match.group(2)
         yield {
-            "province":province,
-            "city":city,
-            "area":area,
-            "livetime":wtime,
-            "limit":wlimt,
-            "wet":wwet,
-            "winssize":wwinds,
-            "winddirection":wwindd,
-            "temp":wtem,
-            "air":wair,
+            'province':province,
+            'city':city,
+            'area':area,
+            'summary':summary,
+            'low':low,
+            'high':high,
         }
+
