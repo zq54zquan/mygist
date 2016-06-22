@@ -59,6 +59,14 @@ class WeatherSpider(scrapy.Spider):
         url=response.url
         wl = response.xpath('//div[@id="7d"]')
         summary = wl.xpath('./input/@value').extract()[0]
+        livetime = wl.xpath('./input/@value').extract()[2]
+
+        s7days = wl.xpath('./ul[@class="t clearfix"]').xpath('./li')
+        s7daysweather = []
+        for li in s7days:
+            res = self.parseOneDay(li)
+            s7daysweather.append(res)
+
         regex = ur"(\d+)/(\d+)"
         match = re.search(regex,summary)
         if match:
@@ -68,8 +76,21 @@ class WeatherSpider(scrapy.Spider):
             'province':province,
             'city':city,
             'area':area,
-            'summary':summary,
-            'low':low,
-            'high':high,
+            'livetime':livetime,
+            "weather":s7daysweather
         }
 
+    def parseOneDay(self,node):
+        day = node.xpath('./h1/text()').extract()
+        we = node.xpath('./p[@class="wea"]//text()').extract()
+        tem = node.xpath('./p[@class="tem"]')
+        low = tem.xpath('./span//text()').extract()
+        high = tem.xpath('./i//text()').extract()
+        win = node.xpath('./p[@class="win"]')
+        windes = win.xpath('./i//text()').extract()
+        windir = win.xpath('./em')
+        winddirs = []
+        for winsp in windir.xpath('./span/@title'):
+            winddirs.append(winsp.extract())
+
+        return {"day":day,"weather":we,"low":low,"high":high,"wind":{"des":windes,"direction":winddirs}}
