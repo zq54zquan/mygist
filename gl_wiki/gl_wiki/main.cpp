@@ -20,28 +20,52 @@
 const char *pVS = "/Users/zq54zquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.vert";
 const char *fVS = "/Users/zq54zquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.frag";
 GLuint VBO;
+GLuint IBO;
 GLuint VAO;
 GLint uniformLocation;
 using namespace std;
+static
+void createIndexBuffer() {
+    unsigned int indices[] = {
+        0,3,1,
+        1,3,2,
+        2,3,0,
+        0,1,2
+    };
+    
+    glGenBuffers(1, &IBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+    
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+}
 
+static
 void createVertexBuffer() {
-    Vector3f ver[3];
+    Vector3f ver[8];
    
     ver[0] = {-1.0f,-1.0f,0.0f};
-    ver[1] = {1.0,-1.0,0};
-    ver[2] = {.0,1.0,0};
+    ver[1] = {1.0,.0,0};
+    
+    ver[2] = {0.0f,-1.0f,1.0f};
+    ver[3] = {0.0,1.0,0};
+    
+    ver[4] = {1.0f,-1.0f,0.0f};
+    ver[5] = {0.0,1.0,1.0};
+    
+    ver[6] = {.0f,1.0f,0.0f};
+    ver[7] = {1.0,1.0,1.0};
+    
+    
+    
     /* Allocate and assign a Vertex Array Object to our handle */
-#ifdef GL3_PROTOTYPES
     glGenVertexArrays(1, &VAO);
     
     /* Bind our Vertex Array Object as the current used object */
     glBindVertexArray(VAO);
-#endif
+    
     glGenBuffers(1,&VBO);
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
     glBufferData(GL_ARRAY_BUFFER,sizeof(ver),ver,GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-
 }
 
 void renderScreen() {
@@ -50,11 +74,11 @@ void renderScreen() {
     scale += 0.01f;
     
     Mat4f world;
-    world.mat[0][0] = 1.0;world.mat[0][1] = .0;world.mat[0][2] = 0.0;world.mat[0][3] = sinf(scale);
+    world.mat[0][0] = cosf(scale);world.mat[0][1] = 0;world.mat[0][2] = -sinf(scale);world.mat[0][3] = 0.0;
     
-    world.mat[1][0] = 0.0;world.mat[1][1] = 1.0;world.mat[1][2] = 0.0;world.mat[1][3] = 0.0;
+    world.mat[1][0] =0;world.mat[1][1] = 1.0;world.mat[1][2] = 0.0;world.mat[1][3] = 0.0;
     
-    world.mat[2][0] = 0.0;world.mat[2][1] = 0.0;world.mat[2][2] = 1.0;world.mat[2][3] = 0.0;
+    world.mat[2][0] = sinf(scale);world.mat[2][1] = 0.0;world.mat[2][2] = cosf(scale);world.mat[2][3] = 0.0;
     
     world.mat[3][0] = 0.0;world.mat[3][1] = 0.0;world.mat[3][2] = 0.0;world.mat[3][3] = 1.0;
     
@@ -63,10 +87,18 @@ void renderScreen() {
     
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 24,0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (GLvoid *)12);
+    
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 3*4,0);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+//    glDrawArrays(GL_TRIANGLES, 0, 3);
+    
+    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     glutSwapBuffers();
     glBindVertexArray(0);
 }
@@ -178,6 +210,7 @@ int main(int argc,  char * argv[]) {
     glutIdleFunc(renderScreen);
     glClearColor(.0f, 1.0f, .0f, .0f);
     createVertexBuffer();
+    createIndexBuffer();
     compileShaders();
 
     glutMainLoop();
