@@ -13,5 +13,7 @@ typedef struct  {
     float x,y,z;
 } Vector3f;
 
-
+typedef struct {
+    float mat[4][4];
+} Mat4f;
 #endif /* math_3d_h */

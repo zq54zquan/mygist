@@ -7,18 +7,21 @@
 //
 
 #include <iostream>
-#include <GL/glew.h>
+//#include <GL/glew.h>
 #include <OpenGL/gl3.h>
 #include "math_3d.h"
 #include <GLUT/GLUT.h>
 #include <string>
 #include <fstream>
+#include <math.h>
+#include <assert.h>
 
 
-const char *pVS = "/Users/zhouquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.vert";
-const char *fVS = "/Users/zhouquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.frag";
+const char *pVS = "/Users/zq54zquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.vert";
+const char *fVS = "/Users/zq54zquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.frag";
 GLuint VBO;
 GLuint VAO;
+GLint uniformLocation;
 using namespace std;
 
 void createVertexBuffer() {
@@ -28,31 +31,44 @@ void createVertexBuffer() {
     ver[1] = {1.0,-1.0,0};
     ver[2] = {.0,1.0,0};
     /* Allocate and assign a Vertex Array Object to our handle */
+#ifdef GL3_PROTOTYPES
     glGenVertexArrays(1, &VAO);
     
     /* Bind our Vertex Array Object as the current used object */
     glBindVertexArray(VAO);
+#endif
     glGenBuffers(1,&VBO);
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
     glBufferData(GL_ARRAY_BUFFER,sizeof(ver),ver,GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
+
 }
 
 void renderScreen() {
     glClear(GL_COLOR_BUFFER_BIT);
+    static float scale = 0.0f;
+    scale += 0.01f;
+    
+    Mat4f world;
+    world.mat[0][0] = 1.0;world.mat[0][1] = .0;world.mat[0][2] = 0.0;world.mat[0][3] = sinf(scale);
+    
+    world.mat[1][0] = 0.0;world.mat[1][1] = 1.0;world.mat[1][2] = 0.0;world.mat[1][3] = 0.0;
+    
+    world.mat[2][0] = 0.0;world.mat[2][1] = 0.0;world.mat[2][2] = 1.0;world.mat[2][3] = 0.0;
+    
+    world.mat[3][0] = 0.0;world.mat[3][1] = 0.0;world.mat[3][2] = 0.0;world.mat[3][3] = 1.0;
     
     
+    glUniformMatrix4fv(uniformLocation, 1, GL_TRUE, *(world.mat));
+    
+    glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
-    
-    
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 3*4,0);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
-    
-    
     glutSwapBuffers();
+    glBindVertexArray(0);
 }
 static
 void addShader(GLuint shaderProgram,const char *s , GLenum shaderType) {
@@ -127,8 +143,11 @@ void compileShaders() {
         fprintf(stderr, "error link shader program:%s",errorLog);
         exit(1);
     }
-    glValidateProgram(shaderProgram);
+    uniformLocation = glGetUniformLocation(shaderProgram,"gworld");
+    assert(uniformLocation != 0xFFFFFFFF);
+
     
+    glValidateProgram(shaderProgram);
     
     glGetProgramiv(shaderProgram,GL_VALIDATE_STATUS,&success);
     if (0 == success) {
@@ -151,15 +170,14 @@ int main(int argc,  char * argv[]) {
     glutInitWindowSize(800, 400);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("t1");
-    GLenum res = glewInit();
-    if (res!=GLEW_OK) {
-        fprintf(stderr, "error :%s",glewGetErrorString(res));
-    }
+//    GLenum res = glewInit();
+//    if (res!=GLEW_OK) {
+//        fprintf(stderr, "error :%s",glewGetErrorString(res));
+//    }
     glutDisplayFunc(renderScreen);
     glutIdleFunc(renderScreen);
     glClearColor(.0f, 1.0f, .0f, .0f);
     createVertexBuffer();
-
     compileShaders();
 
     glutMainLoop();
