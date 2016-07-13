@@ -10,6 +10,7 @@
 		8A23D5991D1B7DD90079472B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A23D5981D1B7DD90079472B /* main.cpp */; };
 		8A23D5A11D1B7DF50079472B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A23D59F1D1B7DF50079472B /* GLUT.framework */; };
 		8A23D5A21D1B7DF50079472B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A23D5A01D1B7DF50079472B /* OpenGL.framework */; };
+		8A7F8A391D3674E9003E3619 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7F8A371D3674E9003E3619 /* Pipeline.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +31,8 @@
 		8A23D59F1D1B7DF50079472B /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		8A23D5A01D1B7DF50079472B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		8A23D5A51D1B831F0079472B /* math_3d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = math_3d.h; sourceTree = "<group>"; };
+		8A7F8A371D3674E9003E3619 /* Pipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
+		8A7F8A381D3674E9003E3619 /* Pipeline.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Pipeline.hpp; sourceTree = "<group>"; };
 		8AB13D911D351A800065CFD8 /* shader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shader.vert; sourceTree = "<group>"; };
 		8AB13D921D351A8B0065CFD8 /* shader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shader.frag; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,6 +75,8 @@
 				8A23D5A51D1B831F0079472B /* math_3d.h */,
 				8AB13D911D351A800065CFD8 /* shader.vert */,
 				8AB13D921D351A8B0065CFD8 /* shader.frag */,
+				8A7F8A371D3674E9003E3619 /* Pipeline.cpp */,
+				8A7F8A381D3674E9003E3619 /* Pipeline.hpp */,
 			);
 			path = gl_wiki;
 			sourceTree = "<group>";
@@ -133,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A23D5991D1B7DD90079472B /* main.cpp in Sources */,
+				8A7F8A391D3674E9003E3619 /* Pipeline.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

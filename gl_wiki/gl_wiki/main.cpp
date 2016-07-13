@@ -15,14 +15,18 @@
 #include <fstream>
 #include <math.h>
 #include <assert.h>
+#include "Pipeline.hpp"
 
-
-const char *pVS = "/Users/zq54zquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.vert";
-const char *fVS = "/Users/zq54zquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.frag";
+const char *pVS = "/Users/zhouquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.vert";
+const char *fVS = "/Users/zhouquan/Desktop/codes/mygist/gl_wiki/gl_wiki/shader.frag";
 GLuint VBO;
 GLuint IBO;
 GLuint VAO;
 GLint uniformLocation;
+static float scale = 0.0f;
+
+
+
 using namespace std;
 static
 void createIndexBuffer() {
@@ -70,20 +74,22 @@ void createVertexBuffer() {
 
 void renderScreen() {
     glClear(GL_COLOR_BUFFER_BIT);
-    static float scale = 0.0f;
-    scale += 0.01f;
-    
+    glClear(GL_DEPTH_BUFFER_BIT);
     Mat4f world;
-    world.mat[0][0] = cosf(scale);world.mat[0][1] = 0;world.mat[0][2] = -sinf(scale);world.mat[0][3] = 0.0;
+//    world.mat[0][0] = cosf(scale);world.mat[0][1] = 0;world.mat[0][2] = -sinf(scale);world.mat[0][3] = 0.0;
+//    
+//    world.mat[1][0] =0;world.mat[1][1] = 1.0;world.mat[1][2] = 0.0;world.mat[1][3] = 0.0;
+//    
+//    world.mat[2][0] = sinf(scale);world.mat[2][1] = 0.0;world.mat[2][2] = cosf(scale);world.mat[2][3] = 0.0;
+//    
+//    world.mat[3][0] = 0.0;world.mat[3][1] = 0.0;world.mat[3][2] = 0.0;world.mat[3][3] = 1.0;
     
-    world.mat[1][0] =0;world.mat[1][1] = 1.0;world.mat[1][2] = 0.0;world.mat[1][3] = 0.0;
     
-    world.mat[2][0] = sinf(scale);world.mat[2][1] = 0.0;world.mat[2][2] = cosf(scale);world.mat[2][3] = 0.0;
+    Pipeline p;
+    p.rotate(0, scale, 0);
+    p.translate(0, 0, -5);
     
-    world.mat[3][0] = 0.0;world.mat[3][1] = 0.0;world.mat[3][2] = 0.0;world.mat[3][3] = 1.0;
-    
-    
-    glUniformMatrix4fv(uniformLocation, 1, GL_TRUE, *(world.mat));
+    glUniformMatrix4fv(uniformLocation, 1, GL_TRUE, *(p.getTrans()->mat));
     
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
@@ -190,6 +196,13 @@ void compileShaders() {
     glUseProgram(shaderProgram);
 }
 
+void keyboardFunc(unsigned char key, int x, int y) {
+    if (key == 'a') {
+        scale += 10/360.0;
+    } else if ( key == 's') {
+        scale -= 10/360.0;
+    }
+}
 
 
 int main(int argc,  char * argv[]) {
@@ -198,7 +211,7 @@ int main(int argc,  char * argv[]) {
     
    
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_3_2_CORE_PROFILE);
+    glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA|GLUT_3_2_CORE_PROFILE);
     glutInitWindowSize(800, 400);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("t1");
@@ -208,7 +221,19 @@ int main(int argc,  char * argv[]) {
 //    }
     glutDisplayFunc(renderScreen);
     glutIdleFunc(renderScreen);
+    
+    
+    glutKeyboardFunc(keyboardFunc);
+    
     glClearColor(.0f, 1.0f, .0f, .0f);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
+    
+    
+    glEnable(GL_DEPTH_TEST);
+    
     createVertexBuffer();
     createIndexBuffer();
     compileShaders();
